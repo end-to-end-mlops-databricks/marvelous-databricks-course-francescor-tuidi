@@ -1,5 +1,5 @@
-catalog_name: marvelous_mlops
-schema_name: house_prices
+catalog_name: marvelous_dev_ops
+schema_name: video_game_sales
 
 data_path: data/data.csv
 
