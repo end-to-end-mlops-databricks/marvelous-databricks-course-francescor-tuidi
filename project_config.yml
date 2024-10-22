@@ -1,0 +1,22 @@
+catalog_name: marvelous_mlops
+schema_name: house_prices
+
+parameters:
+  learning_rate: 0.01
+
+num_features:
+  - Rank
+  - Year
+  - NA_Sales
+  - JP_Sales
+  - Other_Sales
+  - Global_Sales
+
+cat_features:
+  - Name
+  - Platform
+  - Genre
+  - Publisher
+  - Developer
+
+target: EU_Sales
