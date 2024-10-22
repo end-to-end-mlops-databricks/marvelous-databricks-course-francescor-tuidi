@@ -1,6 +1,8 @@
 catalog_name: marvelous_mlops
 schema_name: house_prices
 
+data_path: data/data.csv
+
 parameters:
   learning_rate: 0.01
 
@@ -20,3 +22,5 @@ cat_features:
   - Developer
 
 target: EU_Sales
+
+verbose: True
