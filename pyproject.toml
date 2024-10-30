@@ -17,11 +17,11 @@ dependencies = [
     "matplotlib>=3.9.2, <4",
     "databricks-feature-engineering>=0.6, <1",
     "pytest>=8.3.3",
+    "pre-commit>=4.0.1",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit>=4.0.1",
     "databricks-connect>=15.4.1, <16",
     "databricks-sdk>=0.32.0, <0.33",
     "ipykernel>=6.29.5, <7",
