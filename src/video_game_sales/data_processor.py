@@ -12,6 +12,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from src import logger
 from src.utilies.decorators import log_execution_time
 from src.video_game_sales.config import ProjectConfig
+from pandas import DataFrame
 
 
 class DataProcessor:
@@ -22,7 +23,7 @@ class DataProcessor:
     """
 
     @log_execution_time("Initialize DataProcessor.")
-    def __init__(self, config: ProjectConfig):
+    def __init__(self, config: ProjectConfig, pandas_df: DataFrame = None):
         """
         Initialize the DataProcessor.
 
@@ -31,7 +32,7 @@ class DataProcessor:
             config (dict): Configuration dictionary containing feature
                 and target information.
         """
-        self.df = self.load_data(config.data_path)
+        self.df = pandas_df if pandas_df is not None else self.load_data(config.data_path)
         self.config = config
         self.X = None
         self.y = None
@@ -99,15 +100,12 @@ class DataProcessor:
                 reproducibility. Defaults to 42.
 
         Returns:
-            tuple: (X_train, X_test, y_train, y_test) - Split feature and target datasets.
+            tuple: (train_set, test_set) - Split feature and target datasets.
         """
-        X_train, X_test, y_train, y_test = train_test_split(
-            self.X, self.y, test_size=test_size, random_state=random_state
-        )
 
-        logger.debug(f"Training set shape: {X_train.shape}, Test set shape: {X_test.shape}")
+        train_set, test_set = train_test_split(self.df, test_size=test_size, random_state=random_state)
+        return train_set, test_set
 
-        return X_train, X_test, y_train, y_test
 
     @log_execution_time("Save data to catalog.")
     def save_to_catalog(self, train_set: pd.DataFrame, test_set: pd.DataFrame, spark: SparkSession):
