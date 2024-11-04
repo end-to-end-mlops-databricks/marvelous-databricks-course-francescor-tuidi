@@ -1,5 +1,3 @@
-import yaml
-
 from src import logger
 from src.video_game_sales.config import ProjectConfig
 from src.video_game_sales.data_processor import DataProcessor

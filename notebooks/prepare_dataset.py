@@ -1,11 +1,9 @@
-# Databricks notebook source
-dbutils.library.restartPython()
-
 # COMMAND ----------
 
 from pyspark.sql import SparkSession
-from src.video_game_sales.data_processor import DataProcessor
+
 from src.video_game_sales.config import ProjectConfig
+from src.video_game_sales.data_processor import DataProcessor
 
 # COMMAND ----------
 

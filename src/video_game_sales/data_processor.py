@@ -1,6 +1,7 @@
 """This module contains a class for processing video game sales data."""
 
 import pandas as pd
+from pandas import DataFrame
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, to_utc_timestamp
 from sklearn.compose import ColumnTransformer
@@ -9,10 +10,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from src import logger
 from src.utilies.decorators import log_execution_time
 from src.video_game_sales.config import ProjectConfig
-from pandas import DataFrame
 
 
 class DataProcessor:
@@ -105,7 +104,6 @@ class DataProcessor:
 
         train_set, test_set = train_test_split(self.df, test_size=test_size, random_state=random_state)
         return train_set, test_set
-
 
     @log_execution_time("Save data to catalog.")
     def save_to_catalog(self, train_set: pd.DataFrame, test_set: pd.DataFrame, spark: SparkSession):
