@@ -1,13 +1,15 @@
 # Databricks notebook source
 from pyspark.sql import SparkSession
-
-from src.video_game_sales.config import ProjectConfig
+from notebooks import config
 from src.video_game_sales.data_processor import DataProcessor
 
 # COMMAND ----------
 
+config.data_full_path
+
+# COMMAND ----------
+
 spark = SparkSession.builder.getOrCreate()
-config = ProjectConfig.from_yaml(config_path="../project_config.yml")
 
 # COMMAND ----------
 

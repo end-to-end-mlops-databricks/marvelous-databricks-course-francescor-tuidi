@@ -1,0 +1,53 @@
+{
+    "info": {
+        "artifact_uri": "dbfs:/databricks/mlflow-tracking/586904075146324/5853adecf96b4962b00aba6cd91318bd/artifacts",
+        "end_time": 1730754531258,
+        "experiment_id": "586904075146324",
+        "lifecycle_stage": "active",
+        "run_id": "5853adecf96b4962b00aba6cd91318bd",
+        "run_name": "demo-run",
+        "run_uuid": "5853adecf96b4962b00aba6cd91318bd",
+        "start_time": 1730754530077,
+        "status": "FINISHED",
+        "user_id": ""
+    },
+    "data": {
+        "metrics": {
+            "metric1": 1.0,
+            "metric2": 2.0
+        },
+        "params": {
+            "type": "demo"
+        },
+        "tags": {
+            "branch": "week2",
+            "git_sha": "ffa63b430205ff7",
+            "mlflow.databricks.cluster.id": "1017-102824-1gsli9aj",
+            "mlflow.databricks.cluster.info": "{\"cluster_name\":\"Morandi DS3 Flordocafe\",\"spark_version\":\"14.3.x-cpu-ml-scala2.12\",\"node_type_id\":\"Standard_DS3_v2\",\"driver_node_type_id\":\"Standard_DS3_v2\",\"autotermination_minutes\":120,\"disk_spec\":{},\"num_workers\":0}",
+            "mlflow.databricks.cluster.libraries": "{\"installable\":[],\"redacted\":[]}",
+            "mlflow.databricks.gitRepoCommit": "f227fd4b049c2da5808ceb0063b873ecba999699",
+            "mlflow.databricks.gitRepoProvider": "gitHub",
+            "mlflow.databricks.gitRepoReference": "week2",
+            "mlflow.databricks.gitRepoReferenceType": "branch",
+            "mlflow.databricks.gitRepoRelativePath": "notebooks/mlflow_experiments",
+            "mlflow.databricks.gitRepoStatus": "unknown",
+            "mlflow.databricks.gitRepoUrl": "https://github.com/end-to-end-mlops-databricks/marvelous-databricks-course-francescor-tuidi",
+            "mlflow.databricks.notebook.commandID": "623146241725677231_6119958561680127849_2dcc187c8bb0432d86d6ba0b5b0eb696",
+            "mlflow.databricks.notebookID": "586904075146311",
+            "mlflow.databricks.notebookPath": "/Users/francesco.ranieri@tuidi.it/marvelous-databricks-course/notebooks/mlflow_experiments",
+            "mlflow.databricks.notebookRevisionID": "1730754531520",
+            "mlflow.databricks.webappURL": "https://westeurope-c2.azuredatabricks.net",
+            "mlflow.databricks.workspaceID": "3290835098342339",
+            "mlflow.databricks.workspaceURL": "adb-3290835098342339.19.azuredatabricks.net",
+            "mlflow.note.content": "demo run",
+            "mlflow.runColor": "#5387dd",
+            "mlflow.runName": "demo-run",
+            "mlflow.source.name": "/Users/francesco.ranieri@tuidi.it/marvelous-databricks-course/notebooks/mlflow_experiments",
+            "mlflow.source.type": "NOTEBOOK",
+            "mlflow.user": "francesco.ranieri@tuidi.it"
+        }
+    },
+    "inputs": {
+        "dataset_inputs": []
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "_experiment_id": "586904075146324",
+    "_name": "/Shared/marvelous_dev_ops-video_games_sales",
+    "_artifact_location": "dbfs:/databricks/mlflow-tracking/586904075146324",
+    "_lifecycle_stage": "active",
+    "_tags": {
+        "mlflow.experiment.sourceName": "/Shared/marvelous_dev_ops-video_games_sales",
+        "mlflow.ownerId": "4251187745148641",
+        "mlflow.ownerEmail": "francesco.ranieri@tuidi.it",
+        "mlflow.experimentType": "MLFLOW_EXPERIMENT",
+        "repository_name": "video_games_sales"
+    },
+    "_creation_time": 1730753873014,
+    "_last_update_time": 1730753873014
+}
