@@ -1,3 +1,4 @@
+volumes_root: Volumes
 catalog_name: marvelous_dev_ops
 schema_name: video_game_sales
 
@@ -19,8 +20,5 @@ cat_features:
   - Platform
   - Genre
   - Publisher
-  - Developer
 
 target: EU_Sales
-
-verbose: True
