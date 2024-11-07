@@ -1,6 +1,5 @@
 """Metrics for the model."""
 
-import numpy as np
 from pydantic import BaseModel
 
 

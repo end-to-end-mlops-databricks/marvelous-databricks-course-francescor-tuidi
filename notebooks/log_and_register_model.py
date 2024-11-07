@@ -5,9 +5,7 @@ import git
 import mlflow
 from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
-from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder
 
 from src import config, logger
 from src.utilies.delta import get_latest_delta_version
@@ -23,7 +21,7 @@ mlflow.set_registry_uri("databricks-uc")
 
 video_game_model = VideoGameModel(config=config)
 data_processor = DataProcessor(config=config)
-data_processor.load_data( "/" + config.data_full_path)
+data_processor.load_data("/" + config.data_full_path)
 data_processor.preprocess_data()
 
 num_features = config.num_features
@@ -57,13 +55,13 @@ pipeline = Pipeline(steps=[("preprocessor", data_processor.preprocessor), ("regr
 # COMMAND ----------
 
 try:
-  repo = git.Repo(search_parent_directories=True)
-  git_sha = repo.head.object.hexsha
-  current_branch = repo.active_branch.name
+    repo = git.Repo(search_parent_directories=True)
+    git_sha = repo.head.object.hexsha
+    current_branch = repo.active_branch.name
 except git.exc.InvalidGitRepositoryError:
-  # In case of a Databricks notebook, the git repo is not available
-  git_sha = "latest"
-  current_branch = "latest"
+    # In case of a Databricks notebook, the git repo is not available
+    git_sha = "latest"
+    current_branch = "latest"
 logger.info(f"Git SHA: {git_sha}")
 logger.info(f"Branch: {current_branch}")
 

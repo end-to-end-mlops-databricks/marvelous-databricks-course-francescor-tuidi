@@ -3,8 +3,6 @@
 from delta.tables import DeltaTable
 from pyspark.sql import SparkSession
 
-from src import logger
-
 
 def get_latest_delta_version(table_path: str, spark: SparkSession) -> int:
     """Get the latest version of a Delta table.
