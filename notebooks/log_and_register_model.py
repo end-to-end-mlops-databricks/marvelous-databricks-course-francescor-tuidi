@@ -19,11 +19,12 @@ mlflow.set_registry_uri("databricks-uc")
 
 # COMMAND ----------
 
-
 # Extract configuration details
 
 video_game_model = VideoGameModel(config=config)
 data_processor = DataProcessor(config=config)
+data_processor.load_data( "/" + config.data_full_path)
+data_processor.preprocess_data()
 
 num_features = config.num_features
 cat_features = config.cat_features
@@ -32,11 +33,14 @@ catalog_name = config.catalog_name
 schema_name = config.schema_name
 
 # COMMAND ----------
+
 spark = SparkSession.builder.getOrCreate()
 
 # Load training and testing sets from Databricks tables
 train_set_spark, _ = data_processor.load_from_catalog_spark(spark=spark)
 train_set, test_set = data_processor.load_from_catalog_pandas(spark=spark)
+
+train_set, test_set = data_processor.split_data()
 
 X_train = train_set[num_features + cat_features]
 y_train = train_set[target]
@@ -46,21 +50,27 @@ y_test = test_set[target]
 parameters = config.parameters
 
 # COMMAND ----------
-# Define the preprocessor for categorical features
-preprocessor = ColumnTransformer(
-    transformers=[("cat", OneHotEncoder(handle_unknown="ignore"), cat_features)], remainder="passthrough"
-)
 
 # Create the pipeline with preprocessing and the LightGBM regressor
-pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("regressor", video_game_model.model)])
-
+pipeline = Pipeline(steps=[("preprocessor", data_processor.preprocessor), ("regressor", video_game_model.model)])
 
 # COMMAND ----------
+
+try:
+  repo = git.Repo(search_parent_directories=True)
+  git_sha = repo.head.object.hexsha
+  current_branch = repo.active_branch.name
+except git.exc.InvalidGitRepositoryError:
+  # In case of a Databricks notebook, the git repo is not available
+  git_sha = "latest"
+  current_branch = "latest"
+logger.info(f"Git SHA: {git_sha}")
+logger.info(f"Branch: {current_branch}")
+
+# COMMAND ----------
+
 experiments_name = os.path.join("/Shared", f"{config.catalog_name}-{config.schema_name}")
 mlflow.set_experiment(experiment_name=experiments_name)
-repo = git.Repo(search_parent_directories=True)
-git_sha = repo.head.object.hexsha
-current_branch = repo.active_branch.name
 
 # Start an MLflow run to track the training process
 with mlflow.start_run(
@@ -80,7 +90,7 @@ with mlflow.start_run(
     mlflow.log_params(parameters)
     mlflow.log_metric("mse", evaluation_metrics.mse)
     mlflow.log_metric("mae", evaluation_metrics.mae)
-    mlflow.log_metric("r2_score", evaluation_metrics.r2)
+    mlflow.log_metric("r2_score", evaluation_metrics.r2_score)
     signature = infer_signature(model_input=X_train, model_output=y_pred)
 
     table_name = f"{catalog_name}.{schema_name}.train_set"
@@ -91,16 +101,16 @@ with mlflow.start_run(
 
 
 # COMMAND ----------
+
 model_version = mlflow.register_model(
     model_uri=f"runs:/{run_id}/lightgbm-pipeline-model",
-    name=f"{catalog_name}.{schema_name}.house_prices_model_basic",
+    name=f"{catalog_name}.{schema_name}.video_games_model",
     tags={"git_sha": f"{git_sha}"},
 )
 
 # COMMAND ----------
+
 run = mlflow.get_run(run_id)
 dataset_info = run.inputs.dataset_inputs[0].dataset
 dataset_source = mlflow.data.get_source(dataset_info)
 dataset_source.load()
-
-# COMMAND ----------

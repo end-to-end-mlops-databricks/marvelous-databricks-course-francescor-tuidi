@@ -24,7 +24,7 @@ class DataProcessor:
     """
 
     @log_execution_time("Initialize DataProcessor.")
-    def __init__(self, config: ProjectConfig, pandas_df: PandasDataFrame = None) -> None:
+    def __init__(self, config: ProjectConfig = None, pandas_df: PandasDataFrame = None) -> None:
         """
         Initialize the DataProcessor.
 
@@ -65,7 +65,7 @@ class DataProcessor:
         target = self.config.target
         if self.df is None:
             raise ValueError("Data not loaded. Call load_data() first.")
-        self.df = self.df.dropna(subset=[target])
+        self.df = self.df.dropna()
 
         # Separate features and target
         self.X = self.df[self.config.num_features + self.config.cat_features]
@@ -121,11 +121,11 @@ class DataProcessor:
             "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
         )
 
-        train_set_with_timestamp.write.mode("append").saveAsTable(
+        train_set_with_timestamp.write.mode("overwrite").saveAsTable(
             f"{self.config.catalog_name}.{self.config.schema_name}.train_set"
         )
 
-        test_set_with_timestamp.write.mode("append").saveAsTable(
+        test_set_with_timestamp.write.mode("overwrite").saveAsTable(
             f"{self.config.catalog_name}.{self.config.schema_name}.test_set"
         )
 
@@ -139,7 +139,7 @@ class DataProcessor:
             "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
         )
 
-    @log_execution_time("Load data from catalog.")
+    @log_execution_time("Load data from catalog - SPARK.")
     def load_from_catalog_spark(self, spark: SparkSession) -> tuple[SparkDataFrame, SparkDataFrame]:
         """Load the train and test sets from Databricks tables.
         Args:
@@ -152,6 +152,7 @@ class DataProcessor:
         test_set = spark.table(f"{self.config.catalog_name}.{self.config.schema_name}.test_set")
         return train_set, test_set
 
+    @log_execution_time("Load data from catalog - PANDAS.")
     def load_from_catalog_pandas(self, spark: SparkSession) -> tuple[PandasDataFrame, PandasDataFrame]:
         """Load the train and test sets from Databricks tables as Pandas DataFrames.
         Args:

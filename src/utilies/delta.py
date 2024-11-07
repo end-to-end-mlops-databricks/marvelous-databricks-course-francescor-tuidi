@@ -16,7 +16,6 @@ def get_latest_delta_version(table_path: str, spark: SparkSession) -> int:
     Returns:
         int: The latest version of the Delta table.
     """
-    delta_table = DeltaTable.forPath(spark, table_path)
-    delta_version = delta_table.history().select("version").collect()
-    logger.info(f"Latest Delta version: {delta_version[-1]['version']}")
-    return delta_version[-1]["version"]
+    delta_table = DeltaTable.forName(spark, table_path)
+    delta_history = delta_table.history()
+    return delta_history.orderBy("version", ascending=False).first()["version"]
