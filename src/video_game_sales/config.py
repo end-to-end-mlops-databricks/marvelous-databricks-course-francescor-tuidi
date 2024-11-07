@@ -1,3 +1,5 @@
+"""Configuration module."""
+
 import os
 from typing import Any, Dict, List
 
@@ -18,7 +20,12 @@ class ProjectConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, config_path: str = "project_config.yml"):
-        """Load configuration from a YAML file."""
+        """Load configuration from a YAML file.
+        Args:
+            config_path (str): The path to the configuration file.
+        Returns:
+            ProjectConfig: The configuration object.
+        """
         with open(config_path, "r") as f:
             config_dict = yaml.safe_load(f)
             config_dict["data_full_path"] = os.path.join(

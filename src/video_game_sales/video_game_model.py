@@ -1,43 +1,56 @@
 """This module contains the VideoGameModel class."""
 
 import pandas as pd
+from lightgbm import LGBMRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-from src.video_game_sales.data_processor import DataProcessor
+from src import default_config
+from src.video_game_sales.config import ProjectConfig
+from src.video_game_sales.metrics import Metrics
 
 
 class VideoGameModel:
     """A model for predicting video game sales."""
 
-    def __init__(self, preprocessor: DataProcessor, config: dict):
+    def __init__(self, config: ProjectConfig = None) -> None:
         """Initializes the VideoGameModel object.
 
         Args:
-            preprocessor (): _description_
-            config (dict): _description_
+            config (ProjectConfig): The project configuration.
         """
+        self.config = config or default_config
+        self.parameters = config.parameters
+        self.model = LGBMRegressor(**self.parameters)
 
-    def train(self, x_train: pd.DataFrame, y_train: pd.DataFrame):
+    def train(self, x_train: pd.DataFrame, y_train: pd.DataFrame) -> None:
         """Trains the model.
 
         Args:
-            x_train (pd.DataFrame): _description_
-            y_train (pd.DataFrame): _description_
+            x_train (pd.DataFrame): The input features.
+            y_train (pd.DataFrame): The target variable.
         """
+        self.model.fit(x_train, y_train)
 
     def predict(self, x: pd.DataFrame):
         """Predicts the target variable.
 
         Args:
-            X (pd.DataFrame): _description_
+            x (pd.DataFrame): The input features.
         """
+        self.model.predict(x)
 
-    def evaluate(self, x_test: pd.DataFrame, y_test: pd.DataFrame):
+    def evaluate(self, y_gt: pd.DataFrame, y_pred: pd.DataFrame) -> Metrics:
         """Evaluates the model.
-
         Args:
-            X_test (pd.DataFrame): _description_
-            y_test (pd.DataFrame): _description_
+            y_gt (pd.DataFrame): _description_
+            y_pred (pd.DataFrame): _description_
+        Returns:
+            dict: A dictionary containing the evaluation metrics: mse, mae, and r2_score.
         """
-
-    def get_feature_importance(self):
-        """Returns the feature importance of the model."""
+        return Metrics(
+            metrics_dict={
+                "mse": mean_squared_error(y_gt, y_pred),
+                "mae:": mean_absolute_error(y_gt, y_pred),
+                "r2_score": r2_score(y_gt, y_pred),
+            }
+        )

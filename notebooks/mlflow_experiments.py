@@ -1,7 +1,9 @@
 # Databricks notebook source
-import os
 import json
+import os
+
 import mlflow
+
 from notebooks import config
 
 # COMMAND ----------
@@ -14,9 +16,7 @@ mlflow.set_experiment_tags({"repository_name": config.schema_name})
 
 # COMMAND ----------
 
-experiments = mlflow.search_experiments(
-    filter_string=f"tags.repository_name='{config.schema_name}'"
-)
+experiments = mlflow.search_experiments(filter_string=f"tags.repository_name='{config.schema_name}'")
 print(experiments)
 
 # COMMAND ----------
@@ -28,8 +28,7 @@ with open("mlflow_experiment.json", "w") as json_file:
 
 with mlflow.start_run(
     run_name="demo-run",
-    tags={"git_sha": "ffa63b430205ff7",
-          "branch": "week2"},
+    tags={"git_sha": "ffa63b430205ff7", "branch": "week2"},
     description="demo run",
 ) as run:
     mlflow.log_params({"type": "demo"})

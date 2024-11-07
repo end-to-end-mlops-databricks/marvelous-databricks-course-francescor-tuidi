@@ -1,11 +1,8 @@
 # Databricks notebook source
 from pyspark.sql import SparkSession
+
 from notebooks import config
 from src.video_game_sales.data_processor import DataProcessor
-
-# COMMAND ----------
-
-config.data_full_path
 
 # COMMAND ----------
 
