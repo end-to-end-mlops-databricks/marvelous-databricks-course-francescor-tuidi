@@ -10,7 +10,6 @@ import mlflow
 from databricks import feature_engineering
 from databricks.feature_engineering import FeatureFunction, FeatureLookup
 from databricks.sdk import WorkspaceClient
-from lightgbm import LGBMRegressor
 from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -65,7 +64,9 @@ processor.create_mean_feature_table(spark=spark, function_name=function_name, fe
 # COMMAND ----------
 
 features_cols = ["NA_Sales", "JP_Sales", "Other_Sales", "Global_Sales"]
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").drop("NA_Sales", "JP_Sales", "Other_Sales", "Global_Sales")
+train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").drop(
+    "NA_Sales", "JP_Sales", "Other_Sales", "Global_Sales"
+)
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set").toPandas()
 train_set = train_set.withColumn("Rank", train_set["Rank"].cast("string"))
 
@@ -159,4 +160,3 @@ with mlflow.start_run(tags={"branch": current_branch, "git_sha": git_sha}) as ru
 mlflow.register_model(
     model_uri=f"runs:/{run_id}/lightgbm-pipeline-model-fe", name=f"{catalog_name}.{schema_name}.video_games_model_fe"
 )
-
