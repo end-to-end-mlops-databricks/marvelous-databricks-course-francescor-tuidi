@@ -38,6 +38,8 @@ class DataProcessor:
         self.X = None
         self.y = None
         self.preprocessor = None
+        self.train_set_path = f"{self.config.catalog_name}.{self.config.schema_name}.train_set"
+        self.test_set_path = f"{self.config.catalog_name}.{self.config.schema_name}.test_set"
 
     @log_execution_time("Load data.")
     def load_data(self, filepath: str) -> PandasDataFrame:
@@ -152,8 +154,8 @@ class DataProcessor:
             tuple: (train_set, test_set) - Train and test sets as Spark DataFrames.
         """
 
-        train_set = spark.table(f"{self.config.catalog_name}.{self.config.schema_name}.train_set")
-        test_set = spark.table(f"{self.config.catalog_name}.{self.config.schema_name}.test_set")
+        train_set = spark.table(self.train_set_path)
+        test_set = spark.table(self.test_set_path)
         return train_set, test_set
 
     @log_execution_time("Load data from catalog - PANDAS.")
@@ -167,3 +169,57 @@ class DataProcessor:
 
         train_set, test_set = self.load_from_catalog_spark(spark)
         return train_set.toPandas(), test_set.toPandas()
+
+    @log_execution_time("Create Feature Table")
+    def create_mean_feature_table(self, spark: SparkSession, function_name: str, feature_table_name: str) -> None:
+        """Create a feature table from the data.
+
+        Args:
+            spark (SparkSession): Spark session object.
+            function_name (str): Name of the function to create.
+            feature_table_name (str): Name of the feature table to create.
+
+        Returns:
+            None
+        """
+        spark.sql(f"""
+        CREATE OR REPLACE TABLE {feature_table_name}
+        (
+            Id STRING NOT NULL,
+            NA_Sales FLOAT,
+            JP_Sales FLOAT,
+            Other_Sales FLOAT,
+            Global_Sales FLOAT);
+        """)
+
+        spark.sql(f"ALTER TABLE {feature_table_name} ADD CONSTRAINT video_games_pk PRIMARY KEY(Id);")
+
+        spark.sql(f"ALTER TABLE {feature_table_name} SET TBLPROPERTIES (delta.enableChangeDataFeed = true);")
+
+        # Insert data into the feature table from both train and test sets
+        spark.sql(
+            f"INSERT INTO {feature_table_name} "
+            f"SELECT Rank as Id, NA_Sales, JP_Sales, Other_Sales, Global_Sales FROM {self.train_set_path}"
+        )
+
+        spark.sql(
+            f"INSERT INTO {feature_table_name} "
+            f"SELECT Rank as Id, NA_Sales, JP_Sales, Other_Sales, Global_Sales FROM {self.test_set_path}"
+        )
+
+        # COMMAND ----------
+        # Define a function to calculate the house's age using the current year and YearBuilt
+
+        spark.sql(f"""
+        CREATE OR REPLACE FUNCTION {function_name}(
+            na_sales FLOAT,
+            jp_sales FLOAT,
+            other_sales FLOAT,
+            global_sales FLOAT
+        )
+        RETURNS FLOAT
+        LANGUAGE PYTHON AS
+        $$
+        return (na_sales + jp_sales + other_sales + global_sales) / 4
+        $$
+        """)

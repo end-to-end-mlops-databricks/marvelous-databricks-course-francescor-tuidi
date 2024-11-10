@@ -1,6 +1,5 @@
 # COMMAND ----------
 
-import json
 import os
 
 import mlflow
@@ -25,8 +24,7 @@ client = MlflowClient()
 # Extract configuration details
 video_game_model = VideoGameModel(config=config)
 data_processor = DataProcessor(config=config)
-data_processor.load_data("/" + config.data_full_path)
-data_processor.preprocess_data()
+processing_pipeline = data_processor.create_preprocessing_pipeline()
 
 num_features = config.num_features
 cat_features = config.cat_features
@@ -41,8 +39,6 @@ spark = SparkSession.builder.getOrCreate()
 # Load training and testing sets from Databricks tables
 train_set_spark, _ = data_processor.load_from_catalog_spark(spark=spark)
 train_set, test_set = data_processor.load_from_catalog_pandas(spark=spark)
-
-train_set, test_set = data_processor.split_data()
 
 X_train = train_set[num_features + cat_features]
 y_train = train_set[target]
