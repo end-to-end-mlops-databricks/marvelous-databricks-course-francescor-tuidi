@@ -19,7 +19,8 @@ class VideoGamesModelWrapper(mlflow.pyfunc.PythonModel):
         """Predicts the target variable."""
         if isinstance(model_input, pd.DataFrame):
             predictions = self.model.predict(model_input)
-            predictions = {"Prediction": adjust_predictions(predictions[0])}
+            str_predictions = str(adjust_predictions(predictions[0]))
+            predictions = {"Prediction": str_predictions}
             return predictions
         else:
             raise ValueError("Input must be a pandas DataFrame.")

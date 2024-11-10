@@ -1,7 +1,7 @@
 """This module contains utility functions for the predictions phase."""
 
 
-def adjust_predictions(predictions: float, scale_factor: float = 1.3) -< float:
+def adjust_predictions(predictions: float, scale_factor: float = 1.3) -> float:
     """Adjust the predictions by a scale factor.
 
     Args:
