@@ -9,8 +9,9 @@ from sklearn.pipeline import Pipeline
 
 from src import config, logger
 from src.utils.delta import get_latest_delta_version
+from src.utils.git import get_git_info
 from src.video_game_sales.data_processor import DataProcessor
-from src.video_game_sales.video_game_model import VideoGameModel
+from src.video_game_sales.models.video_game import VideoGameModel
 
 mlflow.set_tracking_uri("databricks")
 mlflow.set_registry_uri("databricks-uc")
@@ -18,7 +19,6 @@ mlflow.set_registry_uri("databricks-uc")
 # COMMAND ----------
 
 # Extract configuration details
-
 video_game_model = VideoGameModel(config=config)
 data_processor = DataProcessor(config=config)
 data_processor.load_data("/" + config.data_full_path)
@@ -54,16 +54,7 @@ pipeline = Pipeline(steps=[("preprocessor", data_processor.preprocessor), ("regr
 
 # COMMAND ----------
 
-try:
-    repo = git.Repo(search_parent_directories=True)
-    git_sha = repo.head.object.hexsha
-    current_branch = repo.active_branch.name
-except git.exc.InvalidGitRepositoryError:
-    # In case of a Databricks notebook, the git repo is not available
-    git_sha = "latest"
-    current_branch = "latest"
-logger.info(f"Git SHA: {git_sha}")
-logger.info(f"Branch: {current_branch}")
+git_sha, current_branch = get_git_info()
 
 # COMMAND ----------
 
