@@ -5,7 +5,7 @@ from lightgbm import LGBMRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 from src import config as default_config
-from src.utilies.decorators import log_execution_time
+from src.utils.decorators import log_execution_time
 from src.video_game_sales.config import ProjectConfig
 from src.video_game_sales.metrics import Metrics
 

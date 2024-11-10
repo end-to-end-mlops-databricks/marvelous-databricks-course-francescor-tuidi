@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from src import config as default_config
-from src.utilies.decorators import log_execution_time
+from src.utils.decorators import log_execution_time
 from src.video_game_sales.config import ProjectConfig
 
 

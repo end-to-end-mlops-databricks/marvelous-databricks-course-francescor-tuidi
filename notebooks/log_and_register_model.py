@@ -8,7 +8,7 @@ from pyspark.sql import SparkSession
 from sklearn.pipeline import Pipeline
 
 from src import config, logger
-from src.utilies.delta import get_latest_delta_version
+from src.utils.delta import get_latest_delta_version
 from src.video_game_sales.data_processor import DataProcessor
 from src.video_game_sales.video_game_model import VideoGameModel
 
