@@ -8,6 +8,7 @@ from sklearn.pipeline import Pipeline
 
 from src import config, logger
 from src.utils.delta import get_latest_delta_version
+from src.utils.experiments_runner import ExperimentsRunner
 from src.utils.git import get_git_info
 from src.video_game_sales.data_processor import DataProcessor
 from src.video_game_sales.models.video_game import VideoGameModel
@@ -17,12 +18,10 @@ mlflow.set_registry_uri("databricks-uc")
 
 # COMMAND ----------
 
-# Extract configuration details
 video_game_model = VideoGameModel(config=config)
 data_processor = DataProcessor(config=config)
-data_processor.load_data("/" + config.data_full_path)
-data_processor.preprocess_data()
 
+# Extract configuration details
 num_features = config.num_features
 cat_features = config.cat_features
 target = config.target

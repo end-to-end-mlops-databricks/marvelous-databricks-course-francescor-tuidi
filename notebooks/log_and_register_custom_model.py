@@ -1,6 +1,3 @@
-# Databricks notebook source
-dbutils.library.restartPython()
-
 # COMMAND ----------
 
 import json
@@ -87,9 +84,7 @@ with mlflow.start_run(tags={"branch": current_branch, "git_sha": git_sha}) as ru
     signature = infer_signature(model_input=X_train, model_output=example_prediction)
     table_name = f"{catalog_name}.{schema_name}.train_set"
     version = get_latest_delta_version(table_name, spark)
-    dataset = mlflow.data.from_spark(
-        train_set_spark, table_name=table_name, version=version
-    )
+    dataset = mlflow.data.from_spark(train_set_spark, table_name=table_name, version=version)
     mlflow.log_input(dataset, context="training")
     dist_path = f"/{config.volumes_root}/{config.catalog_name}/{config.schema_path}/dist/mlops_with_databricks-0.0.1-py3-none-any.whl"
     conda_env = _mlflow_conda_env(
