@@ -19,6 +19,7 @@ mlflow.set_registry_uri("databricks-uc")
 
 video_game_model = VideoGameModel(config=config)
 data_processor = DataProcessor(config=config)
+preprocessing_pipeline = data_processor.create_preprocessing_pipeline()
 
 # Extract configuration details
 num_features = config.num_features
@@ -57,7 +58,7 @@ parameters = config.parameters
 # COMMAND ----------
 
 # Create the pipeline with preprocessing and the LightGBM regressor
-pipeline = Pipeline(steps=[("preprocessor", data_processor.preprocessor), ("regressor", video_game_model.model)])
+pipeline = Pipeline(steps=[("preprocessor", preprocessing_pipeline), ("regressor", video_game_model.model)])
 
 # COMMAND ----------
 

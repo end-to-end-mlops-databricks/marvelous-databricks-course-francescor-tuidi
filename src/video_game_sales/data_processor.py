@@ -71,6 +71,8 @@ class DataProcessor:
         self.X = self.df[self.config.num_features + self.config.cat_features]
         self.y = self.df[target]
 
+    @log_execution_time("Create preprocessing pipeline.")
+    def create_preprocessing_pipeline(self) -> None:
         # Create preprocessing steps for numeric and categorical data
         numeric_transformer = Pipeline(
             steps=[("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]
@@ -90,6 +92,8 @@ class DataProcessor:
                 ("cat", categorical_transformer, self.config.cat_features),
             ]
         )
+
+        return self.preprocessor
 
     @log_execution_time("Split data in training and testing sets.")
     def split_data(self, test_size: float = 0.2, random_state: float = 42):
