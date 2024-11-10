@@ -8,6 +8,7 @@ from sklearn.pipeline import Pipeline
 
 from src import config, logger
 from src.utils.delta import get_latest_delta_version
+from src.utils.experiments_runner import ExperimentsRunner
 from src.utils.git import get_git_info
 from src.video_game_sales.data_processor import DataProcessor
 from src.video_game_sales.models.video_game import VideoGameModel
@@ -17,12 +18,10 @@ mlflow.set_registry_uri("databricks-uc")
 
 # COMMAND ----------
 
-# Extract configuration details
 video_game_model = VideoGameModel(config=config)
 data_processor = DataProcessor(config=config)
-data_processor.load_data("/" + config.data_full_path)
-data_processor.preprocess_data()
 
+# Extract configuration details
 num_features = config.num_features
 cat_features = config.cat_features
 target = config.target
@@ -37,8 +36,18 @@ spark = SparkSession.builder.getOrCreate()
 train_set_spark, _ = data_processor.load_from_catalog_spark(spark=spark)
 train_set, test_set = data_processor.load_from_catalog_pandas(spark=spark)
 
-train_set, test_set = data_processor.split_data()
+train_set['Year'] = train_set['Year'].replace('N/A', None)
+test_set['Year'] = test_set['Year'].replace('N/A', None)
 
+# Now, safely drop NaN values
+train_set.dropna(inplace=True)
+test_set.dropna(inplace=True)
+
+# Convert 'Year' column to float
+train_set['Year'] = train_set['Year'].astype('float64')
+test_set['Year'] = test_set['Year'].astype('float64')
+
+# Continue with your code
 X_train = train_set[num_features + cat_features]
 y_train = train_set[target]
 
@@ -54,6 +63,14 @@ pipeline = Pipeline(steps=[("preprocessor", data_processor.preprocessor), ("regr
 # COMMAND ----------
 
 git_sha, current_branch = get_git_info()
+
+# COMMAND ----------
+
+data_processor.load_data("/" + config.data_full_path)
+data_processor.preprocess_data()
+train_set, test_set  = data_processor.split_data()
+
+_X_train = train_set[num_features + cat_features]
 
 # COMMAND ----------
 
