@@ -1,7 +1,4 @@
 # Databricks notebook source
-dbutils.library.restartPython()
-
-# COMMAND ----------
 
 import os
 from datetime import datetime
