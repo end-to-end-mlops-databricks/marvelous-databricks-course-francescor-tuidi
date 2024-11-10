@@ -185,26 +185,26 @@ class DataProcessor:
         spark.sql(f"""
         CREATE OR REPLACE TABLE {feature_table_name}
         (
-            Id STRING NOT NULL,
+            Rank STRING NOT NULL,
             NA_Sales FLOAT,
             JP_Sales FLOAT,
             Other_Sales FLOAT,
             Global_Sales FLOAT);
         """)
 
-        spark.sql(f"ALTER TABLE {feature_table_name} ADD CONSTRAINT video_games_pk PRIMARY KEY(Id);")
+        spark.sql(f"ALTER TABLE {feature_table_name} ADD CONSTRAINT video_games_pk PRIMARY KEY(Rank);")
 
         spark.sql(f"ALTER TABLE {feature_table_name} SET TBLPROPERTIES (delta.enableChangeDataFeed = true);")
 
         # Insert data into the feature table from both train and test sets
         spark.sql(
             f"INSERT INTO {feature_table_name} "
-            f"SELECT Rank as Id, NA_Sales, JP_Sales, Other_Sales, Global_Sales FROM {self.train_set_path}"
+            f"SELECT Rank, NA_Sales, JP_Sales, Other_Sales, Global_Sales FROM {self.train_set_path}"
         )
 
         spark.sql(
             f"INSERT INTO {feature_table_name} "
-            f"SELECT Rank as Id, NA_Sales, JP_Sales, Other_Sales, Global_Sales FROM {self.test_set_path}"
+            f"SELECT Rank, NA_Sales, JP_Sales, Other_Sales, Global_Sales FROM {self.test_set_path}"
         )
 
         # COMMAND ----------
