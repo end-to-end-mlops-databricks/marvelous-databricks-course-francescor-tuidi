@@ -1,7 +1,8 @@
 # Databricks notebook source
-# MAGIC %pip install ../mlops_with_databricks-0.0.1-py3-none-any.whl
+dbutils.library.restartPython()
 
 # COMMAND ----------
+
 import os
 from datetime import datetime
 
@@ -20,15 +21,16 @@ from src.utils.git import get_git_info
 from src.video_game_sales.data_processor import DataProcessor
 from src.video_game_sales.models.video_game import VideoGameModel
 
+# COMMAND ----------
+
 # Initialize the Databricks session and clients
 processor = DataProcessor()
 video_game_model = VideoGameModel()
 preprocessing_pipeline = processor.create_preprocessing_pipeline()
 spark = SparkSession.builder.getOrCreate()
+
 workspace = WorkspaceClient()
 fe = feature_engineering.FeatureEngineeringClient()
-
-# COMMAND ----------
 
 # COMMAND ----------
 
@@ -52,22 +54,22 @@ test_set_path = f"{catalog_name}.{schema_name}.test_set"
 
 
 # COMMAND ----------
-# Load training and test sets
+
 train_set = spark.table(train_set_path)
 test_set = spark.table(test_set_path)
 
-
 # COMMAND ----------
+
 processor.create_mean_feature_table(spark=spark, function_name=function_name, feature_table_name=feature_table_name)
 
 # COMMAND ----------
-# Load training and test sets
+
 features_cols = ["NA_Sales", "JP_Sales", "Other_Sales", "Global_Sales"]
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").drop(features_cols)
+train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").drop("NA_Sales", "JP_Sales", "Other_Sales", "Global_Sales")
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set").toPandas()
-test_set.rename(columns={"Rank": "Id"}, inplace=True)
-train_set = train_set.withColumn("Id", train_set["Rank"].cast("string"))
-train_set = train_set.drop("Rank")
+train_set = train_set.withColumn("Rank", train_set["Rank"].cast("string"))
+
+# COMMAND ----------
 
 # Feature engineering setup
 training_set = fe.create_training_set(
@@ -77,7 +79,7 @@ training_set = fe.create_training_set(
         FeatureLookup(
             table_name=feature_table_name,
             feature_names=features_cols,
-            lookup_key="Id",
+            lookup_key="Rank",
         ),
         FeatureFunction(
             udf_name=function_name,
@@ -93,21 +95,32 @@ training_set = fe.create_training_set(
     exclude_columns=["update_timestamp_utc"],
 )
 
+# COMMAND ----------
+
 # Load feature-engineered DataFrame
-training_df = training_set.load_df().toPandas()
+train_set = training_set.load_df().toPandas()
 
 # Calculate house_age for training and test set
 current_year = datetime.now().year
 test_set[function_output_name] = test_set[features_cols].mean(axis=1)
 
+train_set["Year"] = train_set["Year"].replace("N/A", None)
+test_set["Year"] = test_set["Year"].replace("N/A", None)
+train_set.dropna(inplace=True)
+test_set.dropna(inplace=True)
+train_set["Year"] = train_set["Year"].astype("float64")
+test_set["Year"] = test_set["Year"].astype("float64")
+
 # Split features and target
-X_train = training_df[num_features + cat_features + [function_output_name]]
-y_train = training_df[target]
+X_train = train_set[num_features + cat_features + [function_output_name]]
+y_train = train_set[target]
 X_test = test_set[num_features + cat_features + [function_output_name]]
 y_test = test_set[target]
 
 # Setup preprocessing and model pipeline
-pipeline = Pipeline(steps=[("preprocessor", preprocessing_pipeline), ("regressor", LGBMRegressor(**parameters))])
+pipeline = Pipeline(steps=[("preprocessor", preprocessing_pipeline), ("regressor", video_game_model.model)])
+
+# COMMAND ----------
 
 # Set and start MLflow experiment
 model_experiments_name = os.path.join("/Shared", f"{config.catalog_name}-{config.schema_name}_fe")
@@ -146,3 +159,4 @@ with mlflow.start_run(tags={"branch": current_branch, "git_sha": git_sha}) as ru
 mlflow.register_model(
     model_uri=f"runs:/{run_id}/lightgbm-pipeline-model-fe", name=f"{catalog_name}.{schema_name}.video_games_model_fe"
 )
+
