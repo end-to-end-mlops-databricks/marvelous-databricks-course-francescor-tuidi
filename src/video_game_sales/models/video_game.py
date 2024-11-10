@@ -21,7 +21,7 @@ class VideoGameModel:
             config (ProjectConfig): The project configuration.
         """
         self.config = config or default_config
-        self.parameters = config.parameters
+        self.parameters = self.config .parameters
         self.model = LGBMRegressor(**self.parameters)
 
     @log_execution_time("Train model.")
