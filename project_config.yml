@@ -1,5 +1,6 @@
+volumes_root: Volumes
 catalog_name: marvelous_dev_ops
-schema_name: video_game_sales
+schema_name: video_games_sales
 
 data_path: data/data.csv
 
@@ -19,8 +20,5 @@ cat_features:
   - Platform
   - Genre
   - Publisher
-  - Developer
 
 target: EU_Sales
-
-verbose: True

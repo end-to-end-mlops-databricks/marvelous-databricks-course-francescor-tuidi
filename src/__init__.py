@@ -2,9 +2,17 @@
 
 import logging as logger
 
-import yaml
+from src.video_game_sales.config import ProjectConfig
 
-logger.basicConfig(level=logger.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+PROJECT_CONFIG_PATH = "project_config.yml"
 
-with open("project_config.yml", "r") as file:
-    config = yaml.safe_load(file)
+try:
+    config = ProjectConfig.from_yaml(config_path=PROJECT_CONFIG_PATH)
+except FileNotFoundError:
+    # Notebooks on databricks can not find the config file with absolute paths
+    config = ProjectConfig.from_yaml(config_path=f"../{PROJECT_CONFIG_PATH}")
+
+logger.basicConfig(
+    level=logger.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
