@@ -1,9 +1,9 @@
 # Databricks notebook source
-# MAGIC %pip install ../housing_price-0.0.1-py3-none-any.whl
+# MAGIC %pip install /Volumes/marvelous_dev_ops/video_games_sales/dist/mlops_with_databricks-0.0.1-py3-none-any.whl --force-reinstall
 
 # COMMAND ----------
 
-# MAGIC %restart_python
+dbutils.library.restartPython()
 
 # COMMAND ----------
 
@@ -28,10 +28,7 @@ import requests
 from databricks import feature_engineering
 from databricks.feature_engineering import FeatureLookup
 from databricks.sdk import WorkspaceClient
-from databricks.sdk.service.catalog import (
-    OnlineTableSpec,
-    OnlineTableSpecTriggeredSchedulingPolicy,
-)
+from databricks.sdk.service.catalog import OnlineTableSpec, OnlineTableSpecTriggeredSchedulingPolicy
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
 from pyspark.sql import SparkSession
 
@@ -45,6 +42,10 @@ fe = feature_engineering.FeatureEngineeringClient()
 
 # Set the MLflow registry URI
 mlflow.set_registry_uri("databricks-uc")
+
+# COMMAND ----------
+
+!pip show databricks-sdk
 
 # COMMAND ----------
 
@@ -78,7 +79,7 @@ df = pd.concat([train_set, test_set])
 # COMMAND ----------
 
 # Load the MLflow model for predictions
-pipeline = mlflow.sklearn.load_model(f"models:/{catalog_name}.{schema_name}.video_games_model/1")
+pipeline = mlflow.sklearn.load_model(f"models:/{catalog_name}.{schema_name}.video_games_model/4")
 
 # COMMAND ----------
 
@@ -112,9 +113,10 @@ spec = OnlineTableSpec(
 )
 
 # Create the online table in Databricks
-online_table_pipeline = workspace.online_tables.create(name=online_table_name, spec=spec)
+online_table_pipeline = workspace.online_tables.create(table=online_table_name, specs=spec)
 
 # COMMAND ----------
+
 # 3. Create feture look up and feature spec table feature table
 
 # Define features to look up from the feature table
@@ -135,6 +137,7 @@ fe.create_feature_spec(name=feature_spec_name, features=features, exclude_column
 # MAGIC ## Deploy Feature Serving Endpoint
 
 # COMMAND ----------
+
 # 4. Create endpoing using feature spec
 
 # Create a serving endpoint for the house prices predictions
@@ -158,17 +161,12 @@ workspace.serving_endpoints.create(
 
 # COMMAND ----------
 
-
-# COMMAND ----------
-
 token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
 host = spark.conf.get("spark.databricks.workspaceUrl")
 
 # COMMAND ----------
 
 id_list = preds_df["Id"]
-
-# COMMAND ----------
 
 # COMMAND ----------
 
@@ -189,6 +187,7 @@ print("Execution time:", execution_time, "seconds")
 
 
 # COMMAND ----------
+
 # another way to call the endpoint
 
 response = requests.post(
@@ -197,10 +196,14 @@ response = requests.post(
     json={"dataframe_split": {"columns": ["Id"], "data": [["182"]]}},
 )
 
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Load Test
 
 # COMMAND ----------
+
 # Initialize variables
 serving_endpoint = f"https://{host}/serving-endpoints/video-games-feature-serving/invocations"
 id_list = preds_df.select("Id").rdd.flatMap(lambda x: x).collect()
