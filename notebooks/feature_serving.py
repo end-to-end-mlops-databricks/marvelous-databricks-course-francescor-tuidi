@@ -1,9 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install /Volumes/marvelous_dev_ops/video_games_sales/dist/mlops_with_databricks-0.0.1-py3-none-any.whl --force-reinstall
-
-# COMMAND ----------
-
-dbutils.library.restartPython()
+# MAGIC %pip install /Volumes/marvelous_dev_ops/video_games_sales/dist/mlops_with_databricks-0.0.1-py3-none-any.whl --force-reinstall # noqa
 
 # COMMAND ----------
 
@@ -30,6 +26,7 @@ from databricks.feature_engineering import FeatureLookup
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.catalog import OnlineTableSpec, OnlineTableSpecTriggeredSchedulingPolicy
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
+from pyspark import dbutils
 from pyspark.sql import SparkSession
 
 from src import config
@@ -42,10 +39,6 @@ fe = feature_engineering.FeatureEngineeringClient()
 
 # Set the MLflow registry URI
 mlflow.set_registry_uri("databricks-uc")
-
-# COMMAND ----------
-
-!pip show databricks-sdk
 
 # COMMAND ----------
 

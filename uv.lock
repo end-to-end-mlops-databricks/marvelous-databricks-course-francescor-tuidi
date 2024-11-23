@@ -1,5 +1,5 @@
 version = 1
-requires-python = "==3.11.10"
+requires-python = "==3.11.*"
 resolution-markers = [
     "platform_system != 'Windows'",
     "platform_system == 'Windows'",
@@ -144,7 +144,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath" },
     { name = "python-dateutil" },
-    { name = "urllib3", marker = "python_full_version == '3.11.10'" },
+    { name = "urllib3", marker = "python_full_version == '3.11.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fc/18/87ed003aaeca9e5394aac387c934ab8071d4cd21dcde3df71b490042d4d3/botocore-1.35.41.tar.gz", hash = "sha256:8a09a32136df8768190a6c92f0240cd59c30deb99c89026563efadbbed41fa00", size = 12835043 }
 wheels = [
@@ -793,7 +793,7 @@ dependencies = [
     { name = "pygments" },
     { name = "stack-data" },
     { name = "traitlets" },
-    { name = "typing-extensions", marker = "python_full_version == '3.11.10'" },
+    { name = "typing-extensions", marker = "python_full_version == '3.11.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f7/21/48db7d9dd622b9692575004c7c98f85f5629428f58596c59606d36c51b58/ipython-8.28.0.tar.gz", hash = "sha256:0d0d15ca1e01faeb868ef56bc7ee5a0de5bd66885735682e8a322ae289a13d1a", size = 5495762 }
 wheels = [
@@ -1083,6 +1083,7 @@ dependencies = [
     { name = "pre-commit" },
     { name = "pyarrow" },
     { name = "pydantic" },
+    { name = "pyspark" },
     { name = "pytest" },
     { name = "scikit-learn" },
     { name = "scipy" },
@@ -1114,6 +1115,7 @@ requires-dist = [
     { name = "pre-commit", specifier = ">=4.0.1" },
     { name = "pyarrow", specifier = ">=15.0.2,<16" },
     { name = "pydantic", specifier = ">=2.9.2" },
+    { name = "pyspark", specifier = ">=3.5.3" },
     { name = "pytest", specifier = ">=8.3.3" },
     { name = "scikit-learn", specifier = ">=1.5.1,<2" },
     { name = "scipy", specifier = ">=1.14.1,<2" },
@@ -1204,7 +1206,7 @@ name = "pandas"
 version = "2.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy", marker = "python_full_version == '3.11.10'" },
+    { name = "numpy", marker = "python_full_version == '3.11.*'" },
     { name = "python-dateutil" },
     { name = "pytz" },
     { name = "tzdata" },
@@ -1438,7 +1440,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-types" },
     { name = "pydantic-core" },
-    { name = "typing-extensions", marker = "python_full_version == '3.11.10'" },
+    { name = "typing-extensions", marker = "python_full_version == '3.11.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a9/b7/d9e3f12af310e1120c21603644a1cd86f59060e040ec5c3a80b8f05fae30/pydantic-2.9.2.tar.gz", hash = "sha256:d155cef71265d1e9807ed1c32b4c8deec042a44a50a4188b25ac67ecd81a9c0f", size = 769917 }
 wheels = [
@@ -1485,6 +1487,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/8c/d5/e5aeee5387091148a
 wheels = [
     { url = "https://files.pythonhosted.org/packages/be/ec/2eb3cd785efd67806c46c13a17339708ddc346cbb684eade7a6e6f79536a/pyparsing-3.2.0-py3-none-any.whl", hash = "sha256:93d9577b88da0bbea8cc8334ee8b918ed014968fd2ec383e868fb8afb1ccef84", size = 106921 },
 ]
+
+[[package]]
+name = "pyspark"
+version = "3.5.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "py4j" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9a/90/cb80c8cf194958ab9a3242851c62fa5aef1a0b42f2d9642f1e2eca098005/pyspark-3.5.3.tar.gz", hash = "sha256:68b7cc0c0c570a7d8644f49f40d2da8709b01d30c9126cc8cf93b4f84f3d9747", size = 317304325 }
 
 [[package]]
 name = "pytest"
@@ -1681,7 +1692,7 @@ name = "sqlalchemy"
 version = "2.0.36"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "greenlet", marker = "(platform_machine == 'AMD64' and python_full_version == '3.11.10') or (platform_machine == 'WIN32' and python_full_version == '3.11.10') or (platform_machine == 'aarch64' and python_full_version == '3.11.10') or (platform_machine == 'amd64' and python_full_version == '3.11.10') or (platform_machine == 'ppc64le' and python_full_version == '3.11.10') or (platform_machine == 'win32' and python_full_version == '3.11.10') or (platform_machine == 'x86_64' and python_full_version == '3.11.10')" },
+    { name = "greenlet", marker = "(platform_machine == 'AMD64' and python_full_version == '3.11.*') or (platform_machine == 'WIN32' and python_full_version == '3.11.*') or (platform_machine == 'aarch64' and python_full_version == '3.11.*') or (platform_machine == 'amd64' and python_full_version == '3.11.*') or (platform_machine == 'ppc64le' and python_full_version == '3.11.*') or (platform_machine == 'win32' and python_full_version == '3.11.*') or (platform_machine == 'x86_64' and python_full_version == '3.11.*')" },
     { name = "typing-extensions" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/65/9cbc9c4c3287bed2499e05033e207473504dc4df999ce49385fb1f8b058a/sqlalchemy-2.0.36.tar.gz", hash = "sha256:7f2767680b6d2398aea7082e45a774b2b0767b5c8d8ffb9c8b683088ea9b29c5", size = 9574485 }
