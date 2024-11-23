@@ -1,5 +1,10 @@
 # Databricks notebook source
-# MAGIC %pip install /Volumes/marvelous_dev_ops/video_games_sales/dist/mlops_with_databricks-0.0.1-py3-none-any.whl --force-reinstall # noqa
+# MAGIC %pip install /Volumes/marvelous_dev_ops/video_games_sales/dist/mlops_with_databricks-0.0.1-py3-none-any.whl --force-reinstall --quiet # noqa
+# MAGIC %pip install databricks-sdk==0.32.0 --force-reinstall --quiet
+
+# COMMAND ----------
+
+dbutils.library.restartPython()
 
 # COMMAND ----------
 
@@ -26,8 +31,8 @@ from databricks.feature_engineering import FeatureLookup
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.catalog import OnlineTableSpec, OnlineTableSpecTriggeredSchedulingPolicy
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
-from pyspark import dbutils
 from pyspark.sql import SparkSession
+from src.utils.requests import send_request
 
 from src import config
 
@@ -106,7 +111,7 @@ spec = OnlineTableSpec(
 )
 
 # Create the online table in Databricks
-online_table_pipeline = workspace.online_tables.create(table=online_table_name, specs=spec)
+online_table_pipeline = workspace.online_tables.create(name=online_table_name, spec=spec)
 
 # COMMAND ----------
 
@@ -133,7 +138,6 @@ fe.create_feature_spec(name=feature_spec_name, features=features, exclude_column
 
 # 4. Create endpoing using feature spec
 
-# Create a serving endpoint for the house prices predictions
 workspace.serving_endpoints.create(
     name="video-games-feature-serving",
     config=EndpointCoreConfigInput(
@@ -159,82 +163,9 @@ host = spark.conf.get("spark.databricks.workspaceUrl")
 
 # COMMAND ----------
 
-id_list = preds_df["Id"]
-
-# COMMAND ----------
-
-start_time = time.time()
 serving_endpoint = f"https://{host}/serving-endpoints/video-games-feature-serving/invocations"
-response = requests.post(
-    f"{serving_endpoint}",
+send_request(
+    endpoint=serving_endpoint,
     headers={"Authorization": f"Bearer {token}"},
-    json={"dataframe_records": [{"Id": "182"}]},
+    records=[{"Rank": "100"}]
 )
-
-end_time = time.time()
-execution_time = end_time - start_time
-
-print("Response status:", response.status_code)
-print("Reponse text:", response.text)
-print("Execution time:", execution_time, "seconds")
-
-
-# COMMAND ----------
-
-# another way to call the endpoint
-
-response = requests.post(
-    f"{serving_endpoint}",
-    headers={"Authorization": f"Bearer {token}"},
-    json={"dataframe_split": {"columns": ["Id"], "data": [["182"]]}},
-)
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## Load Test
-
-# COMMAND ----------
-
-# Initialize variables
-serving_endpoint = f"https://{host}/serving-endpoints/video-games-feature-serving/invocations"
-id_list = preds_df.select("Id").rdd.flatMap(lambda x: x).collect()
-headers = {"Authorization": f"Bearer {token}"}
-num_requests = 10
-
-
-# Function to make a request and record latency
-def send_request():
-    random_id = random.choice(id_list)
-    start_time = time.time()
-    response = requests.post(
-        serving_endpoint,
-        headers=headers,
-        json={"dataframe_records": [{"Id": random_id}]},
-    )
-    end_time = time.time()
-    latency = end_time - start_time  # Calculate latency for this request
-    return response.status_code, latency
-
-
-# Measure total execution time
-total_start_time = time.time()
-latencies = []
-
-# Send requests concurrently
-with ThreadPoolExecutor(max_workers=100) as executor:
-    futures = [executor.submit(send_request) for _ in range(num_requests)]
-
-    for future in as_completed(futures):
-        status_code, latency = future.result()
-        latencies.append(latency)
-
-total_end_time = time.time()
-total_execution_time = total_end_time - total_start_time
-
-# Calculate the average latency
-average_latency = sum(latencies) / len(latencies)
-
-print("\nTotal execution time:", total_execution_time, "seconds")
-print("Average latency per request:", average_latency, "seconds")

@@ -1,5 +1,6 @@
 # Databricks notebook source
 # MAGIC %pip install /Volumes/marvelous_dev_ops/video_games_sales/dist/mlops_with_databricks-0.0.1-py3-none-any.whl --force-reinstall --quiet # noqa
+# MAGIC %pip install databricks-sdk==0.32.0 --force-reinstall
 
 # COMMAND ----------
 
@@ -20,10 +21,6 @@ from pyspark.sql import SparkSession
 
 from src import config
 from src.utils.requests import send_request
-
-# COMMAND ----------
-
-!pip install databricks-sdk==0.32.0 --force-reinstall
 
 # COMMAND ----------
 
