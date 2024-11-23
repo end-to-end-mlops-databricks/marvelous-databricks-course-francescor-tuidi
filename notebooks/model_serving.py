@@ -3,7 +3,6 @@
 
 # COMMAND ----------
 
-
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.serving import (
     EndpointCoreConfigInput,
@@ -11,7 +10,7 @@ from databricks.sdk.service.serving import (
     ServedEntityInput,
     TrafficConfig,
 )
-from pyspark import dbutils
+# from pyspark import dbutils
 from pyspark.sql import SparkSession
 
 from src import config
@@ -83,6 +82,7 @@ Each body should be list of json with columns
 """
 
 # COMMAND ----------
+
 model_serving_endpoint = f"https://{host}/serving-endpoints/video-games-model-serving/invocations"
 headers = {"Authorization": f"Bearer {token}"}
 
@@ -92,7 +92,6 @@ response, status_code, latency = send_request(
     headers=headers,
 )
 
-
 # COMMAND ----------
 
 # MAGIC %md
@@ -100,5 +99,4 @@ response, status_code, latency = send_request(
 
 # COMMAND ----------
 
-# Initialize variables
-send_request_concurrently(num_requests=100, records=dataframe_records, endpoint=model_serving_endpoint, headers=headers)
+send_request_concurrently(num_requests=2, records=dataframe_records, endpoint=model_serving_endpoint, headers=headers)
