@@ -8,9 +8,7 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 
-import time
 
-import requests
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.catalog import (
     OnlineTableSpec,
@@ -85,16 +83,12 @@ train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").toPandas()
 train_set["Rank"] = train_set["Rank"].astype(str)
 train_set["Year"] = train_set["Year"].astype("float32")
 
-sampled_records = (
-    train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")
-)
+sampled_records = train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")
 dataframe_records = [[record] for record in sampled_records]
 
 # COMMAND ----------
 
-model_serving_endpoint = (
-    f"https://{host}/serving-endpoints/video-games-model-serving-fe/invocations"
-)
+model_serving_endpoint = f"https://{host}/serving-endpoints/video-games-model-serving-fe/invocations"
 
 # COMMAND ----------
 

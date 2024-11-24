@@ -42,6 +42,7 @@ select = [
 ]
 ignore = [
     "E402", # Module level import not at top of file --> notebook
+    "F821", # For dbutils
 ]
 
 [tool.ruff.format]

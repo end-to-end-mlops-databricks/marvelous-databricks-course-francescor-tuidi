@@ -8,24 +8,17 @@
 
 # COMMAND ----------
 
-import time
-
 import mlflow
-import pandas as pd
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
 from mlflow import MlflowClient
 from pyspark.sql import SparkSession
-from sklearn.compose import ColumnTransformer
-import requests
 
-from src import config
-from src.video_game_sales.data_processor import DataProcessor
-from src.utils.delta import get_latest_delta_version
-from src.utils.git import get_git_info
-from src.video_game_sales.models.video_game import VideoGameModel 
-from src.video_game_sales.models.video_game_wrapper_AB_test import VideoGamesModelWrapperABTest
+from src import config, logger
 from src.utils.requests import send_request
+from src.video_game_sales.data_processor import DataProcessor
+from src.video_game_sales.models.video_game import VideoGameModel
+from src.video_game_sales.models.video_game_wrapper_AB_test import VideoGamesModelWrapperABTest
 
 # COMMAND ----------
 
@@ -114,7 +107,6 @@ model_a.run_experiment(
 )
 model_uri = model_a.set_model_alias(client, "model_A")
 model_A = mlflow.sklearn.load_model(model_uri)
-model_A
 
 # COMMAND ----------
 
@@ -141,7 +133,6 @@ model_b.run_experiment(
 )
 model_uri = model_a.set_model_alias(client, "model_B")
 model_B = mlflow.sklearn.load_model(model_uri)
-model_B
 
 # COMMAND ----------
 
@@ -150,12 +141,10 @@ model_B
 
 # COMMAND ----------
 
-wrapped_model = VideoGamesModelWrapperABTest(model_a = model_A, model_b = model_B)
+wrapped_model = VideoGamesModelWrapperABTest(model_a=model_A, model_b=model_B)
 example_input = X_test.iloc[0:1]  # Select the first row for prediction as example
-example_prediction = wrapped_model.predict(
-    context=None,
-    model_input=example_input)
-print("Example Prediction:", example_prediction)
+example_prediction = wrapped_model.predict(context=None, model_input=example_input)
+logger.info(f"Example Prediction: {example_prediction}")
 
 
 # COMMAND ----------
@@ -167,7 +156,7 @@ run_id, model_version = wrapped_model.run_experiments(
     train_set_spark=train_set_spark,
     experiment_name="/Shared/video-games-ab-testing",
     model_name=wrapped_model_name,
-    register_model=True
+    register_model=True,
 )
 
 # COMMAND ----------
@@ -175,7 +164,7 @@ run_id, model_version = wrapped_model.run_experiments(
 model = mlflow.pyfunc.load_model(model_uri=f"models:/{catalog_name}.{schema_name}.{wrapped_model_name}/{model_version}")
 predictions = model.predict(X_test.iloc[0:1])
 # Display predictions
-predictions
+logger.info(predictions)
 
 # COMMAND ----------
 
@@ -185,7 +174,7 @@ predictions
 # COMMAND ----------
 
 workspace = WorkspaceClient()
-end_point_name = "video-games-model-serving-ab-test-2" 
+end_point_name = "video-games-model-serving-ab-test-2"
 
 workspace.serving_endpoints.create(
     name=end_point_name,
@@ -215,17 +204,11 @@ host = spark.conf.get("spark.databricks.workspaceUrl")
 
 required_columns = config.cat_features + config.num_features
 
-sampled_records = (
-    train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")
-)
+sampled_records = train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")
 dataframe_records = [[record] for record in sampled_records]
 
-model_serving_endpoint = (
-    f"https://{host}/serving-endpoints/{end_point_name}/invocations"
-)
+model_serving_endpoint = f"https://{host}/serving-endpoints/{end_point_name}/invocations"
 headers = {"Authorization": f"Bearer {token}"}
-res, status_code, latency = send_request(
-    endpoint=model_serving_endpoint, records=dataframe_records, headers=headers
-)
+res, status_code, latency = send_request(endpoint=model_serving_endpoint, records=dataframe_records, headers=headers)
 
-print(res)
+logger.info(res)

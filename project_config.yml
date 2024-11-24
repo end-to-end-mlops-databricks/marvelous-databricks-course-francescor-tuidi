@@ -4,7 +4,7 @@ schema_name: video_games_sales
 
 data_path: data/data.csv
 
-parameters: 
+parameters:
   learning_rate: 0.01
 
 ab_test:

@@ -19,22 +19,18 @@ The source Delta table and the online table must use the same primary key.
 
 """
 
-import random
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import mlflow
 import pandas as pd
-import requests
 from databricks import feature_engineering
 from databricks.feature_engineering import FeatureLookup
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.catalog import OnlineTableSpec, OnlineTableSpecTriggeredSchedulingPolicy
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
 from pyspark.sql import SparkSession
-from src.utils.requests import send_request
 
 from src import config
+from src.utils.requests import send_request
 
 spark = SparkSession.builder.getOrCreate()
 
@@ -164,8 +160,4 @@ host = spark.conf.get("spark.databricks.workspaceUrl")
 # COMMAND ----------
 
 serving_endpoint = f"https://{host}/serving-endpoints/video-games-feature-serving/invocations"
-send_request(
-    endpoint=serving_endpoint,
-    headers={"Authorization": f"Bearer {token}"},
-    records=[{"Rank": "100"}]
-)
+send_request(endpoint=serving_endpoint, headers={"Authorization": f"Bearer {token}"}, records=[{"Rank": "100"}])

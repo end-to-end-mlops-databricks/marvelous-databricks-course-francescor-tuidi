@@ -10,6 +10,7 @@ from databricks.sdk.service.serving import (
     ServedEntityInput,
     TrafficConfig,
 )
+
 # from pyspark import dbutils
 from pyspark.sql import SparkSession
 

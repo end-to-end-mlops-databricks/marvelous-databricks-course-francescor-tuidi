@@ -1,15 +1,16 @@
-import mlflow
 import hashlib
-import pandas as pd
+
 import mlflow
+import pandas as pd
+from mlflow.models import infer_signature
+from pyspark.sql import SparkSession
+from pyspark.sql.dataframe import DataFrame
+
 from src import config as default_confing
 from src.utils.decorators import log_execution_time
 from src.utils.delta import get_latest_delta_version
-from pyspark.sql import SparkSession
-from pyspark.sql.dataframe import DataFrame
-from src.video_game_sales.config import ProjectConfig
-from mlflow.models import infer_signature
 from src.utils.git import get_git_info
+from src.video_game_sales.config import ProjectConfig
 
 
 class VideoGamesModelWrapperABTest(mlflow.pyfunc.PythonModel):
@@ -74,9 +75,7 @@ class VideoGamesModelWrapperABTest(mlflow.pyfunc.PythonModel):
             model_version (str): The version of the model.
         """
         mlflow.set_experiment(experiment_name=experiment_name)
-        model_name = (
-            f"{self.config.catalog_name}.{self.config.schema_name}.{model_name}"
-        )
+        model_name = f"{self.config.catalog_name}.{self.config.schema_name}.{model_name}"
         run_id = ""
         model_version = None
 
@@ -86,13 +85,9 @@ class VideoGamesModelWrapperABTest(mlflow.pyfunc.PythonModel):
                 model_input=X_train,
                 model_output={"Prediction": 1234.5, "model": "Model B"},
             )
-            table_name = (
-                f"{self.config.catalog_name}.{self.config.schema_name}.train_set"
-            )
+            table_name = f"{self.config.catalog_name}.{self.config.schema_name}.train_set"
             version_delta = get_latest_delta_version(table_path=table_name, spark=spark)
-            dataset = mlflow.data.from_spark(
-                train_set_spark, table_name=table_name, version=version_delta
-            )
+            dataset = mlflow.data.from_spark(train_set_spark, table_name=table_name, version=version_delta)
             mlflow.log_input(dataset, context="training")
             mlflow.pyfunc.log_model(
                 python_model=self,

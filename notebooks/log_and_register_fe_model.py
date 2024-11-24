@@ -12,7 +12,7 @@ from pyspark.sql import SparkSession
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.pipeline import Pipeline
 
-from src import config
+from src import config, logger
 from src.utils.git import get_git_info
 from src.video_game_sales.data_processor import DataProcessor
 from src.video_game_sales.models.video_game import VideoGameModel
@@ -130,13 +130,13 @@ with mlflow.start_run(tags={"branch": current_branch, "git_sha": git_sha}) as ru
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
 
-    # Calculate and print metrics
+    # Calculate and log metrics
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
-    print(f"Mean Squared Error: {mse}")
-    print(f"Mean Absolute Error: {mae}")
-    print(f"R2 Score: {r2}")
+    logger.info(f"Mean Squared Error: {mse}")
+    logger.info(f"Mean Absolute Error: {mae}")
+    logger.info(f"R2 Score: {r2}")
 
     # Log model parameters, metrics, and model
     mlflow.log_param("model_type", "LightGBM with preprocessing")

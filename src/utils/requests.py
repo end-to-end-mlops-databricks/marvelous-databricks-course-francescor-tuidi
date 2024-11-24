@@ -9,13 +9,6 @@ import requests
 from src import logger
 
 
-from src import logger
-
-import random
-import time
-import requests
-
-
 def send_request(records: list, endpoint: str, headers: dict) -> tuple[int, float]:
     """Send a request to the model serving endpoint and return the status code and latency.
 
@@ -49,9 +42,7 @@ def send_request(records: list, endpoint: str, headers: dict) -> tuple[int, floa
     return text, status_code, latency
 
 
-def send_request_concurrently(
-    num_requests: int, records: list, endpoint: str, headers: dict
-) -> list:
+def send_request_concurrently(num_requests: int, records: list, endpoint: str, headers: dict) -> list:
     """Send multiple requests concurrently and calculate the average latency.
 
     Args:
@@ -71,9 +62,7 @@ def send_request_concurrently(
     # Send requests concurrently
     with ThreadPoolExecutor(max_workers=100) as executor:
         futures = [
-            executor.submit(
-                send_request, records=records, endpoint=endpoint, headers=headers
-            )
+            executor.submit(send_request, records=records, endpoint=endpoint, headers=headers)
             for _ in range(num_requests)
         ]
 
