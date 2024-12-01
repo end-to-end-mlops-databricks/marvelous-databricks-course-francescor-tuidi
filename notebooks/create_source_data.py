@@ -14,6 +14,7 @@ schema_name = config.schema_name
 train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").toPandas()
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set").toPandas()
 combined_set = pd.concat([train_set, test_set], ignore_index=True)
+combined_set = combined_set.drop("update_timestamp_utc", axis=1)
 
 
 # Create synthetic data
@@ -28,4 +29,9 @@ train_set_with_timestamp = synthetic_spark_df.withColumn(
 )
 
 # Append synthetic data as new data to source_data table
-train_set_with_timestamp.write.mode("append").saveAsTable(f"{catalog_name}.{schema_name}.source_data")
+train_set_with_timestamp.write.mode("overwrite").saveAsTable(f"{catalog_name}.{schema_name}.source_data")
+
+# Check
+syntehtic_data_spark = spark.table(f"{catalog_name}.{schema_name}.source_data")
+syntehtic_data_spark.show(5)
+syntehtic_data_spark.count()

@@ -20,32 +20,19 @@ def create_synthetic_data(df, num_rows=100, id_column="Rank"):
 
     for column in df.columns:
         if pd.api.types.is_numeric_dtype(df[column]) and column != id_column:
-            if column in ["YearBuilt", "YearRemodAdd"]:
+            # NUMERIC
+            if column in ["Year"]:
                 synthetic_data[column] = np.random.randint(
                     df[column].min(), df[column].max() + 1, num_rows
                 )  # Years between existing values
             else:
                 mean, std = df[column].mean(), df[column].std()
                 synthetic_data[column] = np.random.normal(mean, std, num_rows)
-
         elif pd.api.types.is_categorical_dtype(df[column]) or pd.api.types.is_object_dtype(df[column]):
+            # CATEGORICAL
             synthetic_data[column] = np.random.choice(
                 df[column].unique(), num_rows, p=df[column].value_counts(normalize=True)
             )
-
-        elif isinstance(df[column].dtype, pd.CategoricalDtype) or isinstance(df[column].dtype, pd.StringDtype):
-            synthetic_data[column] = np.random.choice(
-                df[column].unique(), num_rows, p=df[column].value_counts(normalize=True)
-            )
-        elif pd.api.types.is_datetime64_any_dtype(df[column]):
-            min_date, max_date = df[column].min(), df[column].max()
-            if min_date < max_date:
-                synthetic_data[column] = pd.to_datetime(np.random.randint(min_date.value, max_date.value, num_rows))
-            else:
-                synthetic_data[column] = [min_date] * num_rows
-
-        else:
-            synthetic_data[column] = np.random.choice(df[column], num_rows)
 
     new_ids = []
     i = max(existing_ids) + 1 if existing_ids else 1
