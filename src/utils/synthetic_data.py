@@ -26,8 +26,7 @@ def create_synthetic_data(df, num_rows=100, id_column="Rank"):
                     df[column].min(), df[column].max() + 1, num_rows
                 )  # Years between existing values
             else:
-                mean, std = df[column].mean(), df[column].std()
-                synthetic_data[column] = np.random.normal(mean, std, num_rows)
+                synthetic_data[column] = np.random.uniform(df[column].min(), df[column].max() + 1, num_rows)
         elif pd.api.types.is_categorical_dtype(df[column]) or pd.api.types.is_object_dtype(df[column]):
             # CATEGORICAL
             synthetic_data[column] = np.random.choice(

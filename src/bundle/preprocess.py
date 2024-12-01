@@ -26,7 +26,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.functions import max as spark_max
 
-from src import config
+from src import config, logger
 
 workspace = WorkspaceClient()
 
@@ -79,6 +79,8 @@ new_data_test.write.mode("append").saveAsTable(f"{catalog_name}.{schema_name}.te
 # Verify affected rows count for train and test
 affected_rows_train = new_data_train.count()
 affected_rows_test = new_data_test.count()
+logger.info(f"Affected rows in train_set: {affected_rows_train}")
+logger.info(f"Affected rows in test_set: {affected_rows_test}")
 
 # write into feature table; update online table
 if affected_rows_train > 0 or affected_rows_test > 0:
