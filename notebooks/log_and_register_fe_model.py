@@ -98,8 +98,7 @@ training_set = fe.create_training_set(
 # Load feature-engineered DataFrame
 train_set = training_set.load_df().toPandas()
 
-# Calculate house_age for training and test set
-current_year = datetime.now().year
+# Calculate mean for training and test set
 test_set[function_output_name] = test_set[features_cols].mean(axis=1)
 
 train_set["Year"] = train_set["Year"].replace("N/A", None)
