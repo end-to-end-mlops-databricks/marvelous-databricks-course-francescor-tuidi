@@ -1,7 +1,6 @@
 # Databricks notebook source
 
 import os
-from datetime import datetime
 
 import mlflow
 from databricks import feature_engineering

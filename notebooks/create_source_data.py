@@ -2,7 +2,7 @@ import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, to_utc_timestamp
 
-from src import config, logger
+from src import config
 from src.utils.synthetic_data import create_synthetic_data
 
 spark = SparkSession.builder.getOrCreate()
