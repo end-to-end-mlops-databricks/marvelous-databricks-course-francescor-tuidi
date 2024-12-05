@@ -1073,6 +1073,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "cffi" },
     { name = "cloudpickle" },
+    { name = "databricks-connect" },
     { name = "databricks-feature-engineering" },
     { name = "gitpython" },
     { name = "lightgbm" },
@@ -1101,6 +1102,7 @@ dev = [
 requires-dist = [
     { name = "cffi", specifier = ">=1.17.1,<2" },
     { name = "cloudpickle", specifier = ">=3.0.0,<4" },
+    { name = "databricks-connect", specifier = ">=15.4.2" },
     { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.1,<16" },
     { name = "databricks-feature-engineering", specifier = ">=0.6,<1" },
     { name = "databricks-sdk", marker = "extra == 'dev'", specifier = ">=0.32.0,<0.33" },
