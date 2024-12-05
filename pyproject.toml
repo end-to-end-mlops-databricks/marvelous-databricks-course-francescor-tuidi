@@ -3,7 +3,7 @@ name = "mlops-with-databricks"
 version = "0.0.1"
 description = "MLOps with Databricks"
 readme = "README.md"
-requires-python = "==3.11.10"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "lightgbm>=4.5.0, <5",
     "scikit-learn>=1.5.1, <2",
@@ -20,6 +20,7 @@ dependencies = [
     "pre-commit>=4.0.1",
     "pydantic>=2.9.2",
     "gitpython>=3.1.43",
+    "pyspark>=3.5.3",
 ]
 
 [project.optional-dependencies]
@@ -39,9 +40,10 @@ select = [
     "B", # flake8-bugbear rules
     "I", # isort rules
 ]
-# ignore = [
-#    "E501", # line-too-long
-#]
+ignore = [
+    "E402", # Module level import not at top of file --> notebook
+    "F821", # For dbutils
+]
 
 [tool.ruff.format]
 indent-style = "space"

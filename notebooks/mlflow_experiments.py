@@ -5,6 +5,7 @@ import os
 import mlflow
 
 from notebooks import config
+from src import logger
 
 # COMMAND ----------
 
@@ -17,7 +18,7 @@ mlflow.set_experiment_tags({"repository_name": config.schema_name})
 # COMMAND ----------
 
 experiments = mlflow.search_experiments(filter_string=f"tags.repository_name='{config.schema_name}'")
-print(experiments)
+logger.info(experiments)
 
 # COMMAND ----------
 
@@ -41,7 +42,7 @@ run_id = mlflow.search_runs(
     filter_string="tags.git_sha='ffa63b430205ff7'",
 ).run_id[0]
 run_info = mlflow.get_run(run_id=f"{run_id}").to_dictionary()
-print(run_info)
+logger.info(run_info)
 
 # COMMAND ----------
 
@@ -50,8 +51,8 @@ with open("run_info.json", "w") as json_file:
 
 # COMMAND ----------
 
-print(run_info["data"]["metrics"])
+logger.info(run_info["data"]["metrics"])
 
 # COMMAND ----------
 
-print(run_info["data"]["params"])
+logger.info(run_info["data"]["params"])

@@ -8,7 +8,7 @@ from mlflow.models import infer_signature
 from mlflow.utils.environment import _mlflow_conda_env
 from pyspark.sql import SparkSession
 
-from src import config
+from src import config, logger
 from src.utils.delta import get_latest_delta_version
 from src.utils.git import get_git_info
 from src.video_game_sales.data_processor import DataProcessor
@@ -64,7 +64,7 @@ model = mlflow.sklearn.load_model(f"runs:/{run_id}/lightgbm-pipeline-model")
 wrapped_model = VideoGamesModelWrapper(model)  # we pass the loaded model to the wrapper
 example_input = X_test.iloc[0:1]  # Select the first row for prediction as example
 example_prediction = wrapped_model.predict(context=None, model_input=example_input)
-print("Example Prediction:", example_prediction)
+logger.info(f"Example Prediction: {example_prediction}")
 
 # COMMAND ----------
 

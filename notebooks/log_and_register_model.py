@@ -47,7 +47,6 @@ test_set.dropna(inplace=True)
 train_set["Year"] = train_set["Year"].astype("float64")
 test_set["Year"] = test_set["Year"].astype("float64")
 
-# Continue with your code
 X_train = train_set[num_features + cat_features]
 y_train = train_set[target]
 

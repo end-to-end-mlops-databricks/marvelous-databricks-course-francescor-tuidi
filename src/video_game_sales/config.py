@@ -17,6 +17,7 @@ class ProjectConfig(BaseModel):
     parameters: Dict[str, Any]
     num_features: List[str]
     cat_features: List[str]
+    ab_test: Dict[str, Any]
 
     @classmethod
     def from_yaml(cls, config_path: str = "project_config.yml"):
